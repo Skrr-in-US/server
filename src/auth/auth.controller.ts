@@ -5,6 +5,7 @@ import {
   Headers,
   Get,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginAuthDto } from './dto/request/login-auth.dto';
@@ -33,7 +34,7 @@ export class AuthController {
   @ApiOperation({ summary: '유저 정보 가져오기(인증)' })
   @UseGuards(JwtAuthGuard)
   @Get('user')
-  async validate(@Headers('Authorization') token: string) {
-    return this.authService.validate(token);
+  async validate(@Req() request: any) {
+    return request.user;
   }
 }

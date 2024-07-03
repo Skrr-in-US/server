@@ -6,10 +6,11 @@ import { Alert } from './entities/alert.entity';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Alert, User])],
   controllers: [AlertController],
-  providers: [AlertService, AuthService, JwtService],
+  providers: [AlertService, AuthService, JwtService, UserService],
 })
 export class AlertModule {}

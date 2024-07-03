@@ -33,7 +33,20 @@ export class UserService {
       .getMany();
   }
 
-  findOne(id: number) {}
+  async findOne(id: number) {
+    return await this.userRepository.find({
+      select: {
+        id: true,
+        school: true,
+        grade: true,
+        name: true,
+        gender: true,
+        role: true,
+        birth: true,
+      },
+      where: { id },
+    });
+  }
 
   // update(id: number, updateUserDto: UpdateUserDto) {
   //   return `This action updates a #${id} user`;

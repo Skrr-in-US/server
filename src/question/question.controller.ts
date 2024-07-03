@@ -9,6 +9,7 @@ import {
   UseGuards,
   Headers,
   Query,
+  Req,
 } from '@nestjs/common';
 import { QuestionService } from './question.service';
 import { CreateQuestionDto } from './dto/request/create-question.dto';
@@ -24,11 +25,8 @@ export class QuestionController {
   @ApiOperation({ summary: '질문 만들기(어드민 전용)' })
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(
-    @Headers('Authorization') token: string,
-    @Body() createQuestionDto: CreateQuestionDto
-  ) {
-    return this.questionService.create(createQuestionDto, token);
+  create(@Req() request: any, @Body() createQuestionDto: CreateQuestionDto) {
+    return this.questionService.create(createQuestionDto, request.user);
   }
 
   // @Get('first') // 필요하면쓰기

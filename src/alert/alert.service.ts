@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAlertDto } from './dto/create-alert.dto';
-import { UpdateAlertDto } from './dto/update-alert.dto';
+import { CreateAlertDto } from './dto/request/create-alert.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Alert } from './entities/alert.entity';
 import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
+import { AlertResponseDto } from './dto/response/alert-response-dto';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class AlertService {
@@ -15,19 +16,27 @@ export class AlertService {
   ) {}
   async create(
     createAlertDto: CreateAlertDto,
-    token: string
+    user: User
   ): Promise<CreateAlertDto> {
-    const userInfo = await this.authService.validate(token);
-    createAlertDto.sendUser = userInfo.id;
+    createAlertDto.sendUser = user[0].id;
     return await this.alertRepository.save(createAlertDto);
   }
 
-  async findByUser(token: string) {
-    const userInfo = await this.authService.validate(token);
-    return this.alertRepository.find({ where: { receiveUser: userInfo.id } });
+  async findByUser(user: User): Promise<AlertResponseDto[]> {
+    return AlertResponseDto.listOf(
+      await this.alertRepository.find({ where: { receiveUser: user[0].id } })
+    );
   }
 
-  async findOne(id: number, token: string) {
-    const result = this.alertRepository.find({ where: { id } });
+  async findOne(id: number): Promise<AlertResponseDto> {
+    const result = AlertResponseDto.of(
+      await this.alertRepository.findOne({
+        where: { id },
+      })
+    );
+    if (result && result.read === false) {
+      await this.alertRepository.update(id, { read: true });
+    }
+    return result;
   }
 }

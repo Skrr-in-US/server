@@ -18,10 +18,9 @@ export class QuestionService {
   ) {}
   async create(
     createQuestionDto: CreateQuestionDto,
-    token: string
+    user: User
   ): Promise<CreateQuestionDto> {
-    const userInfo = await this.authService.validate(token);
-    if (userInfo.role != 'admin')
+    if (user[0].role != 'admin')
       throw new UnauthorizedException('권한이 없습니다.');
 
     return this.questionRepository.save(createQuestionDto);

@@ -3,17 +3,18 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Headers,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AlertService } from './alert.service';
-import { CreateAlertDto } from './dto/create-alert.dto';
-import { UpdateAlertDto } from './dto/update-alert.dto';
+import { CreateAlertDto } from './dto/request/create-alert.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { AlertResponseDto } from './dto/response/alert-response-dto';
+import { User } from 'src/user/entities/user.entity';
 
 @ApiTags('알림')
 @Controller('alert')
@@ -25,22 +26,25 @@ export class AlertController {
   @Post()
   create(
     @Body() createAlertDto: CreateAlertDto,
-    @Headers('Authorization') token: string
+    @Req() request: any
   ): Promise<CreateAlertDto> {
-    return this.alertService.create(createAlertDto, token);
+    return this.alertService.create(createAlertDto, request.user);
   }
 
   @ApiOperation({ summary: '전체 알림 가져오기' })
   @UseGuards(JwtAuthGuard)
   @Get()
-  findByUser(@Headers('Authorization') token: string) {
-    return this.alertService.findByUser(token);
+  findByUser(@Req() request: any): Promise<AlertResponseDto[]> {
+    return this.alertService.findByUser(request.user);
   }
 
   @ApiOperation({ summary: '알림 자세히 조회' })
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string, @Headers('Authorization') token: string) {
-    return this.alertService.findOne(+id, token);
+  findOne(
+    @Param('id') id: string,
+    @Headers('Authorization') token: string
+  ): Promise<AlertResponseDto> {
+    return this.alertService.findOne(+id);
   }
 }
