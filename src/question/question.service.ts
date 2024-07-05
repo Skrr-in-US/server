@@ -26,9 +26,7 @@ export class QuestionService {
     return this.questionRepository.save(createQuestionDto);
   }
 
-  async findQuestion(token: string, except: string) {
-    const userInfo = await this.authService.validate(token);
-
+  async findQuestion(except: string, userInfo: User) {
     let excludedIds: number[] = [];
     if (except) {
       excludedIds = except
@@ -46,21 +44,24 @@ export class QuestionService {
       .orderBy('RAND()')
       .getOne();
 
-    const users = await this.userService.findUser(userInfo);
+    const users = await this.userService.findUser(userInfo[0]);
 
     return { question, users };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} question`;
+  async update(id: number, updateQuestionDto: UpdateQuestionDto, role: string) {
+    console.log(role);
+    if (role === 'admin') {
+      return await this.questionRepository.update(id, updateQuestionDto);
+    }
+    throw new UnauthorizedException('admin이 아닙니다.');
   }
 
-  update(id: number, updateQuestionDto: UpdateQuestionDto) {
-    return `This action updates a #${id} question`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} question`;
+  async remove(id: number, role: string) {
+    if (role === 'admin') {
+      return await this.questionRepository.delete(id);
+    }
+    throw new UnauthorizedException('admin이 아닙니다.');
   }
 
   // async findQuestions(token: string) {

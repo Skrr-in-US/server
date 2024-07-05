@@ -3,13 +3,13 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
   Headers,
   Query,
   Req,
+  Put,
 } from '@nestjs/common';
 import { QuestionService } from './question.service';
 import { CreateQuestionDto } from './dto/request/create-question.dto';
@@ -35,26 +35,35 @@ export class QuestionController {
   // }
 
   @ApiOperation({ summary: '질문 & 선택할 유저 가져오기' })
+  @UseGuards(JwtAuthGuard)
   @Get()
   findQuestion(
+    @Req() request: any,
     @Headers('Authorization') token: string,
     @Query('except') except: string
   ) {
-    return this.questionService.findQuestion(token, except);
+    return this.questionService.findQuestion(except, request.user);
   }
 
-  @ApiOperation({ summary: '질문 업데이트(어드민용, 미완성)' })
-  @Patch(':id')
+  @ApiOperation({ summary: '질문 업데이트(어드민용)' })
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
   update(
+    @Req() request: any,
     @Param('id') id: string,
     @Body() updateQuestionDto: UpdateQuestionDto
   ) {
-    return this.questionService.update(+id, updateQuestionDto);
+    return this.questionService.update(
+      +id,
+      updateQuestionDto,
+      request.user[0].role
+    );
   }
 
-  @ApiOperation({ summary: '질문 삭제(어드민용, 미완성)' })
+  @ApiOperation({ summary: '질문 삭제(어드민용)' })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.questionService.remove(+id);
+  remove(@Req() request: any, @Param('id') id: string) {
+    return this.questionService.remove(+id, request.user[0].role);
   }
 }
