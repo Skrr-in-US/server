@@ -20,8 +20,8 @@ export class CreateUserDto {
   gender: genderType;
 
   @ApiProperty()
-  @IsString()
-  birth: string;
+  @IsNumber()
+  age: number;
 
   @ApiProperty()
   @IsString()

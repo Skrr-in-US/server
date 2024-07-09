@@ -18,9 +18,9 @@ export class AuthService {
   ) {}
 
   async login(loginAuthDto: LoginAuthDto): Promise<TokenResponse> {
-    const { birth, name, password } = loginAuthDto;
+    const { age, name, password } = loginAuthDto;
 
-    const userInfo = await this.userRepository.find({ where: { birth, name } });
+    const userInfo = await this.userRepository.find({ where: { age, name } });
     if (userInfo.length === 0)
       throw new UnauthorizedException('유저 정보가 일치하지 않습니다.');
     const isUser = await bcrypt.compare(password, userInfo[0].password);
@@ -61,7 +61,7 @@ export class AuthService {
         grade: true,
         name: true,
         gender: true,
-        birth: true,
+        age: true,
         role: true,
       },
       where: { id: validatedToken.id },

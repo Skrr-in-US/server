@@ -3,8 +3,7 @@ import { CreateQuestionDto } from './dto/request/create-question.dto';
 import { UpdateQuestionDto } from './dto/request/update-question.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entities/question.entity';
-import { Not, Repository } from 'typeorm';
-import { AuthService } from 'src/auth/auth.service';
+import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 
@@ -13,7 +12,6 @@ export class QuestionService {
   constructor(
     @InjectRepository(Question)
     private readonly questionRepository: Repository<Question>,
-    private readonly authService: AuthService,
     private readonly userService: UserService
   ) {}
   async create(

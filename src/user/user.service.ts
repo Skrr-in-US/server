@@ -42,7 +42,7 @@ export class UserService {
         name: true,
         gender: true,
         role: true,
-        birth: true,
+        age: true,
       },
       where: { id },
     });

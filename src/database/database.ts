@@ -3,6 +3,7 @@ dotenv.config();
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Alert } from 'src/alert/entities/alert.entity';
+import { Friend } from 'src/friend/entities/friend.entity';
 import { Question } from 'src/question/entities/question.entity';
 import { User } from 'src/user/entities/user.entity';
 @Module({
@@ -15,7 +16,7 @@ import { User } from 'src/user/entities/user.entity';
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_DB,
       synchronize: true,
-      entities: [User, Question, Alert],
+      entities: [User, Question, Alert, Friend],
     }),
   ],
 })

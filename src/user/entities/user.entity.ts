@@ -22,8 +22,8 @@ export class User {
   @Column({ type: 'enum', enum: userType, default: userType.USER })
   role: userType;
 
-  @Column({ type: 'varchar', length: 50, nullable: false })
-  birth: string;
+  @Column({ nullable: false })
+  age: number;
 
   @Column({ type: 'varchar', nullable: false })
   password: string;

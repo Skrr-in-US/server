@@ -6,7 +6,8 @@ import { AlertModule } from './alert/alert.module';
 import { DatabaseModule } from './database/database';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { FriendModule } from './friend/friend.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { JwtModule } from '@nestjs/jwt';
     DatabaseModule,
     AuthModule,
     JwtModule,
+    FriendModule,
   ],
   controllers: [],
   providers: [],
