@@ -4,9 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserInfoResponseDto } from 'src/auth/dto/response/userInfo-response-dto';
+import { Friend } from 'src/friend/entities/friend.entity';
 @Injectable()
 export class UserService {
   constructor(
@@ -31,6 +32,23 @@ export class UserService {
       .orderBy('RAND()')
       .limit(4)
       .getMany();
+  }
+
+  async findBySchool(user: User) {
+    return await this.userRepository.find({
+      select: {
+        id: true,
+        school: true,
+        grade: true,
+        name: true,
+        gender: true,
+        age: true,
+      },
+      where: {
+        school: user[0].school,
+        id: Not(user[0].id),
+      },
+    });
   }
 
   async findOne(id: number) {

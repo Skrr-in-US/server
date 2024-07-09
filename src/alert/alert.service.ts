@@ -3,7 +3,6 @@ import { CreateAlertDto } from './dto/request/create-alert.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Alert } from './entities/alert.entity';
 import { Repository } from 'typeorm';
-import { AuthService } from 'src/auth/auth.service';
 import { AlertResponseDto } from './dto/response/alert-response-dto';
 import { User } from 'src/user/entities/user.entity';
 
@@ -11,8 +10,7 @@ import { User } from 'src/user/entities/user.entity';
 export class AlertService {
   constructor(
     @InjectRepository(Alert)
-    private readonly alertRepository: Repository<Alert>,
-    private readonly authService: AuthService
+    private readonly alertRepository: Repository<Alert>
   ) {}
   async create(
     createAlertDto: CreateAlertDto,
