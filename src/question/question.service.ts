@@ -3,7 +3,7 @@ import { CreateQuestionDto } from './dto/request/create-question.dto';
 import { UpdateQuestionDto } from './dto/request/update-question.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entities/question.entity';
-import { Repository } from 'typeorm';
+import { Repository, QueryRunner, DataSource } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 
@@ -12,16 +12,83 @@ export class QuestionService {
   constructor(
     @InjectRepository(Question)
     private readonly questionRepository: Repository<Question>,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly dataSource: DataSource
   ) {}
+
   async create(
     createQuestionDto: CreateQuestionDto,
     user: User
   ): Promise<CreateQuestionDto> {
-    if (user[0].role != 'admin')
-      throw new UnauthorizedException('권한이 없습니다.');
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    return this.questionRepository.save(createQuestionDto);
+    try {
+      if (user[0].role !== 'admin') {
+        throw new UnauthorizedException('권한이 없습니다.');
+      }
+
+      const savedQuestion = await queryRunner.manager
+        .getRepository(Question)
+        .save(createQuestionDto);
+
+      await queryRunner.commitTransaction();
+      return savedQuestion;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async update(id: number, updateQuestionDto: UpdateQuestionDto, role: string) {
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      if (role !== 'admin') {
+        throw new UnauthorizedException('admin이 아닙니다.');
+      }
+
+      const updateResult = await queryRunner.manager
+        .getRepository(Question)
+        .update(id, updateQuestionDto);
+
+      await queryRunner.commitTransaction();
+      return updateResult;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async remove(id: number, role: string) {
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      if (role !== 'admin') {
+        throw new UnauthorizedException('admin이 아닙니다.');
+      }
+
+      const deleteResult = await queryRunner.manager
+        .getRepository(Question)
+        .delete(id);
+
+      await queryRunner.commitTransaction();
+      return deleteResult;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findQuestion(except: string, userInfo: User) {
@@ -48,34 +115,6 @@ export class QuestionService {
   }
 
   async shuffle(userInfo: User) {
-    console.log(userInfo);
     return await this.userService.findUser(userInfo[0]);
   }
-
-  async update(id: number, updateQuestionDto: UpdateQuestionDto, role: string) {
-    console.log(role);
-    if (role === 'admin') {
-      return await this.questionRepository.update(id, updateQuestionDto);
-    }
-    throw new UnauthorizedException('admin이 아닙니다.');
-  }
-
-  async remove(id: number, role: string) {
-    if (role === 'admin') {
-      return await this.questionRepository.delete(id);
-    }
-    throw new UnauthorizedException('admin이 아닙니다.');
-  }
-
-  // async findQuestions(token: string) {
-  //   const userInfo = await this.authService.validate(token);
-  //   const question = this.questionRepository
-  //     .createQueryBuilder('question')
-  //     .orderBy('RAND()')
-  //     .limit(2).getMany;
-
-  //   const user = await this.userService.findUser(userInfo);
-
-  //   return { question, user };
-  // }
 }

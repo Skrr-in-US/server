@@ -37,12 +37,12 @@ export class AlertController {
     return this.alertService.findByUser(request.user);
   }
 
-  //   @ApiOperation({summary: '알림(유료결제) 자세히 조회'})
-  //   @UseGuards(JwtAuthGuard)
-  //   @Get()
-  // findOneByCredit(@Req() request: any){
-  //   return this.alertService.findOneByCredit(request.)
-  // }
+  @ApiOperation({ summary: '알림(유료결제) 자세히 조회' })
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  findOneByCredit(@Req() request: any, @Param('id') id: number) {
+    return this.alertService.findOneByCredit(id, request.user);
+  }
 
   @ApiOperation({ summary: '알림 자세히 조회' })
   @UseGuards(JwtAuthGuard)

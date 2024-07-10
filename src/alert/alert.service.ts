@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateAlertDto } from './dto/request/create-alert.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Alert } from './entities/alert.entity';
-import { Repository } from 'typeorm';
+import { Repository, QueryRunner, DataSource } from 'typeorm';
 import { AlertResponseDto } from './dto/response/alert-response-dto';
 import { User } from 'src/user/entities/user.entity';
 
@@ -12,22 +12,47 @@ export class AlertService {
     @InjectRepository(Alert)
     private readonly alertRepository: Repository<Alert>,
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly dataSource: DataSource
   ) {}
 
   async create(
     createAlertDto: CreateAlertDto,
     user: User
   ): Promise<CreateAlertDto> {
-    createAlertDto.sendUser = user[0].id;
-    createAlertDto.sendUserName = user[0].name;
-    const receiveUser = await this.userRepository
-      .createQueryBuilder('user')
-      .select('user.name')
-      .where('user.id = :id', { id: createAlertDto.receiveUser })
-      .getOne();
-    createAlertDto.receiveUserName = receiveUser.name;
-    return await this.alertRepository.save(createAlertDto);
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      createAlertDto.sendUser = user[0].id;
+      createAlertDto.sendUserName = user[0].name;
+
+      const receiveUser = await queryRunner.manager
+        .getRepository(User)
+        .createQueryBuilder('user')
+        .select('user.name')
+        .where('user.id = :id', { id: createAlertDto.receiveUser })
+        .getOne();
+
+      if (!receiveUser) {
+        throw new Error('Receive user not found');
+      }
+
+      createAlertDto.receiveUserName = receiveUser.name;
+
+      const savedAlert = await queryRunner.manager
+        .getRepository(Alert)
+        .save(createAlertDto);
+
+      await queryRunner.commitTransaction();
+      return savedAlert;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findByUser(user: User): Promise<AlertResponseDto[]> {
@@ -64,5 +89,12 @@ export class AlertService {
       await this.alertRepository.update(id, { read: true });
     }
     return result;
+  }
+
+  async findOneByCredit(id: number, userInfo: User) {
+    // 크레딧 단위 정해지면 마이너스하기
+    return await this.alertRepository.findOne({
+      where: { id },
+    });
   }
 }

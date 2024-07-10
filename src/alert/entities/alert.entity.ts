@@ -29,4 +29,7 @@ export class Alert {
 
   @Column({ type: 'enum', enum: genderType })
   gender: genderType;
+
+  @Column({ default: false })
+  paid: boolean;
 }
