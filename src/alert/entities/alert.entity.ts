@@ -10,7 +10,16 @@ export class Alert {
   receiveUser: number;
 
   @Column({ nullable: false })
+  receiveUserName: string;
+
+  @Column({ nullable: false })
   sendUser: number;
+
+  @Column({ nullable: false })
+  sendUserName: string;
+
+  @Column()
+  question: string;
 
   @Column()
   summary: string;

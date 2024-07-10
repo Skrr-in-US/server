@@ -8,6 +8,9 @@ export class AlertResponseDto {
   receiveUser: number;
 
   @Expose()
+  receiveUserName: string;
+
+  @Expose()
   sendUser: number;
 
   @Expose()

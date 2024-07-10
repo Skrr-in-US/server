@@ -4,6 +4,8 @@ import { genderType } from 'src/user/entities/enum/genderEnum';
 
 export class CreateAlertDto {
   sendUser: number;
+  sendUserName: string;
+  receiveUserName: string;
 
   @ApiProperty()
   @IsInt()
@@ -12,6 +14,10 @@ export class CreateAlertDto {
   @ApiProperty()
   @IsString()
   summary: string;
+
+  @ApiProperty()
+  @IsString()
+  question: string;
 
   @ApiProperty()
   @IsEnum(genderType)

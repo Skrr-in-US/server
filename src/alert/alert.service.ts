@@ -10,25 +10,53 @@ import { User } from 'src/user/entities/user.entity';
 export class AlertService {
   constructor(
     @InjectRepository(Alert)
-    private readonly alertRepository: Repository<Alert>
+    private readonly alertRepository: Repository<Alert>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
   ) {}
+
   async create(
     createAlertDto: CreateAlertDto,
     user: User
   ): Promise<CreateAlertDto> {
     createAlertDto.sendUser = user[0].id;
+    createAlertDto.sendUserName = user[0].name;
+    const receiveUser = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.name')
+      .where('user.id = :id', { id: createAlertDto.receiveUser })
+      .getOne();
+    createAlertDto.receiveUserName = receiveUser.name;
     return await this.alertRepository.save(createAlertDto);
   }
 
   async findByUser(user: User): Promise<AlertResponseDto[]> {
     return AlertResponseDto.listOf(
-      await this.alertRepository.find({ where: { receiveUser: user[0].id } })
+      await this.alertRepository.find({
+        select: {
+          id: true,
+          question: true,
+          summary: true,
+          read: true,
+          gender: true,
+        },
+        where: { receiveUser: user[0].id },
+      })
     );
   }
 
   async findOne(id: number): Promise<AlertResponseDto> {
     const result = AlertResponseDto.of(
       await this.alertRepository.findOne({
+        select: {
+          id: true,
+          receiveUser: true,
+          receiveUserName: true,
+          question: true,
+          summary: true,
+          read: true,
+          gender: true,
+        },
         where: { id },
       })
     );
