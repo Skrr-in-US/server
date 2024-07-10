@@ -47,6 +47,11 @@ export class QuestionService {
     return { question, users };
   }
 
+  async shuffle(userInfo: User) {
+    console.log(userInfo);
+    return await this.userService.findUser(userInfo[0]);
+  }
+
   async update(id: number, updateQuestionDto: UpdateQuestionDto, role: string) {
     console.log(role);
     if (role === 'admin') {
