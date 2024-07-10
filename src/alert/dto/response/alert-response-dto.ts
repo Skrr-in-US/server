@@ -11,6 +11,9 @@ export class AlertResponseDto {
   receiveUserName: string;
 
   @Expose()
+  sendUserGrade: number;
+
+  @Expose()
   sendUser: number;
 
   @Expose()

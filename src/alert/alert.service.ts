@@ -27,6 +27,7 @@ export class AlertService {
     try {
       createAlertDto.sendUser = user[0].id;
       createAlertDto.sendUserName = user[0].name;
+      createAlertDto.sendUserGrade = user[0].grade;
 
       const receiveUser = await queryRunner.manager
         .getRepository(User)
@@ -60,9 +61,6 @@ export class AlertService {
       await this.alertRepository.find({
         select: {
           id: true,
-          question: true,
-          summary: true,
-          read: true,
           gender: true,
         },
         where: { receiveUser: user[0].id },
@@ -81,6 +79,7 @@ export class AlertService {
           summary: true,
           read: true,
           gender: true,
+          sendUserGrade: true,
         },
         where: { id },
       })

@@ -5,6 +5,7 @@ import { genderType } from 'src/user/entities/enum/genderEnum';
 export class CreateAlertDto {
   sendUser: number;
   sendUserName: string;
+  sendUserGrade: number;
   receiveUserName: string;
 
   @ApiProperty()

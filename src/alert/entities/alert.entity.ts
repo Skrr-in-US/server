@@ -18,6 +18,9 @@ export class Alert {
   @Column({ nullable: false })
   sendUserName: string;
 
+  @Column({ nullable: false })
+  sendUserGrade: number;
+
   @Column()
   question: string;
 
