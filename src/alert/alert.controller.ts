@@ -48,6 +48,11 @@ export class AlertController {
     return this.alertService.create(createAlertDto, request.user);
   }
 
+  @Get('test')
+  test() {
+    return this.alertService.sendPushNotification();
+  }
+
   @ApiOperation({
     summary: '전체 알림 가져오기',
     description:

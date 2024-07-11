@@ -1,3 +1,5 @@
+const dotenv = require('dotenv');
+dotenv.config();
 import { Injectable } from '@nestjs/common';
 import { CreateAlertDto } from './dto/request/create-alert.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -5,6 +7,8 @@ import { Alert } from './entities/alert.entity';
 import { Repository, QueryRunner, DataSource } from 'typeorm';
 import { AlertResponseDto } from './dto/response/alert-response-dto';
 import { User } from 'src/user/entities/user.entity';
+import { join } from 'path';
+import * as admin from 'firebase-admin';
 
 @Injectable()
 export class AlertService {
@@ -14,8 +18,38 @@ export class AlertService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly dataSource: DataSource
-  ) {}
+  ) {
+    const serviceAccount = require(
+      join(
+        __dirname,
+        '..',
+        '..',
+        'skrr-14f11-firebase-adminsdk-pf0su-cf2824e05b.json'
+      )
+    );
 
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+  }
+
+  async sendPushNotification() {
+    const registrationToken = process.env.TESTTOKEN;
+    const payload = {
+      data: {
+        score: '850',
+        time: '2:45',
+      },
+      token: registrationToken,
+    };
+    try {
+      const response = await admin.messaging().send(payload);
+      return response;
+    } catch (error) {
+      console.error('Error sending push notification:', error);
+      throw error;
+    }
+  }
   async create(
     createAlertDto: CreateAlertDto,
     user: User

@@ -42,7 +42,7 @@ export class AuthService {
     const token = this.jwtService.sign(payload, {
       secret: process.env.SECRET_KEY,
       algorithm: 'HS256',
-      expiresIn: '12h',
+      expiresIn: '9900h',
     });
 
     return TokenResponse.of(token);
