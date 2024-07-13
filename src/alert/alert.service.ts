@@ -9,7 +9,6 @@ import { AlertResponseDto } from './dto/response/alert-response-dto';
 import { User } from 'src/user/entities/user.entity';
 import { join } from 'path';
 import * as admin from 'firebase-admin';
-
 @Injectable()
 export class AlertService {
   constructor(
@@ -19,37 +18,36 @@ export class AlertService {
     private readonly userRepository: Repository<User>,
     private readonly dataSource: DataSource
   ) {
-    const serviceAccount = require(
-      join(
-        __dirname,
-        '..',
-        '..',
-        'skrr-14f11-firebase-adminsdk-pf0su-cf2824e05b.json'
-      )
-    );
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
+    // const serviceAccount = require(
+    //   join(
+    //     __dirname,
+    //     '..',
+    //     '..',
+    //     'skrr-14f11-firebase-adminsdk-pf0su-cf2824e05b.json'
+    //   )
+    // );
+    // admin.initializeApp({
+    //   credential: admin.credential.cert(serviceAccount),
+    // });
   }
 
-  async sendPushNotification() {
-    const registrationToken = process.env.TESTTOKEN;
-    const payload = {
-      data: {
-        score: '850',
-        time: '2:45',
-      },
-      token: registrationToken,
-    };
-    try {
-      const response = await admin.messaging().send(payload);
-      return response;
-    } catch (error) {
-      console.error('Error sending push notification:', error);
-      throw error;
-    }
-  }
+  // async sendPushNotification() {
+  //   const registrationToken = '1ABF9250-D1E3-4A80-AC16-83D3505F0713';
+  //   const payload = {
+  //     data: {
+  //       score: '850',
+  //       time: '2:45',
+  //     },
+  //     token: registrationToken,
+  //   };
+  //   try {
+  //     const response = await admin.messaging().send(payload);
+  //     return response;
+  //   } catch (error) {
+  //     console.error('Error sending push notification:', error);
+  //     throw error;
+  //   }
+  // }
   async create(
     createAlertDto: CreateAlertDto,
     user: User
