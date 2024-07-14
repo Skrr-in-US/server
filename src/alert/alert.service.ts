@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAlertDto } from './dto/request/create-alert.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Alert } from './entities/alert.entity';
@@ -112,6 +112,7 @@ export class AlertService {
           read: true,
           gender: true,
           sendUserGrade: true,
+          paid: true,
         },
         where: { id },
       })
@@ -122,10 +123,37 @@ export class AlertService {
     return result;
   }
 
-  async findOneByCredit(id: number, userInfo: User) {
-    // 크레딧 단위 정해지면 마이너스하기
-    return await this.alertRepository.findOne({
-      where: { id },
-    });
+  async findOneByCredit(id: number, userInfo: User): Promise<Alert | number> {
+    const queryRunner =
+      this.alertRepository.manager.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const result = await queryRunner.manager.findOne(Alert, {
+        where: { id },
+      });
+      if (result && result.paid === false) {
+        if (userInfo[0].token === 0) {
+          await queryRunner.rollbackTransaction();
+          return HttpStatus.PAYMENT_REQUIRED;
+        }
+        userInfo[0].token = userInfo[0].token - 1;
+        await queryRunner.manager.update(User, userInfo[0].id, {
+          token: userInfo[0].token,
+        });
+        await queryRunner.manager.update(Alert, id, { paid: true });
+        result.paid = true;
+      }
+
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

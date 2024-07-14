@@ -61,6 +61,7 @@ export class UserService {
         gender: true,
         role: true,
         age: true,
+        token: true,
       },
       where: { id },
     });

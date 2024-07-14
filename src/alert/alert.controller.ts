@@ -109,4 +109,10 @@ export class AlertController {
   findOne(@Param('id') id: string): Promise<AlertResponseDto> {
     return this.alertService.findOne(+id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('token/:id')
+  findByToken(@Req() request: any, @Param('id') id: number) {
+    return this.alertService.findOneByCredit(id, request.user);
+  }
 }

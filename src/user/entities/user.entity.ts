@@ -28,5 +28,6 @@ export class User {
   @Column({ type: 'varchar', nullable: false })
   password: string;
 
-  //나중에추가 토큰같은거?
+  @Column({ default: 3 })
+  token: number;
 }

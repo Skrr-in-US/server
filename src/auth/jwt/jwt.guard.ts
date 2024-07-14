@@ -21,7 +21,6 @@ export class JwtAuthGuard implements CanActivate {
     if (!token) {
       throw new UnauthorizedException('Token not found');
     }
-
     try {
       const replacedToken = token.replace('Bearer ', '');
       const validatedToken = this.jwtService.verify(replacedToken, {
@@ -31,7 +30,6 @@ export class JwtAuthGuard implements CanActivate {
       if (!user) {
         throw new UnauthorizedException('Invalid token');
       }
-
       request.user = user;
       return true;
     } catch (error) {
