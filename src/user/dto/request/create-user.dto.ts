@@ -22,4 +22,7 @@ export class CreateUserDto {
 
   @IsString()
   password: string;
+
+  @IsString()
+  fcd: string;
 }

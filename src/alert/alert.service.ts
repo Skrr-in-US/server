@@ -18,36 +18,37 @@ export class AlertService {
     private readonly userRepository: Repository<User>,
     private readonly dataSource: DataSource
   ) {
-    // const serviceAccount = require(
-    //   join(
-    //     __dirname,
-    //     '..',
-    //     '..',
-    //     'skrr-14f11-firebase-adminsdk-pf0su-cf2824e05b.json'
-    //   )
-    // );
-    // admin.initializeApp({
-    //   credential: admin.credential.cert(serviceAccount),
-    // });
+    const serviceAccount = require(
+      join(
+        __dirname,
+        '..',
+        '..',
+        'skrr-14f11-firebase-adminsdk-pf0su-cf2824e05b.json'
+      )
+    );
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
   }
 
-  // async sendPushNotification() {
-  //   const registrationToken = '1ABF9250-D1E3-4A80-AC16-83D3505F0713';
-  //   const payload = {
-  //     data: {
-  //       score: '850',
-  //       time: '2:45',
-  //     },
-  //     token: registrationToken,
-  //   };
-  //   try {
-  //     const response = await admin.messaging().send(payload);
-  //     return response;
-  //   } catch (error) {
-  //     console.error('Error sending push notification:', error);
-  //     throw error;
-  //   }
-  // }
+  async sendPushNotification() {
+    const registrationToken =
+      'fxrYVwjtkkUQoG6kVxJRLH:APA91bHJ4OciBnbLrAl7sVHd5XglLBLcAFZKqJ48BCvxBx36n0164-hNjdh7UQXOo4eqm2weSZrsw_RxjFE2XRFxs2h9z623AgNB_HanB-cfKcfaOsRvxaaiWrNmM7w9MXuQ06eBcs9A';
+    const payload = {
+      data: {
+        score: '850',
+        time: '2:45',
+      },
+      token: registrationToken,
+    };
+    try {
+      const response = await admin.messaging().send(payload);
+      return response;
+    } catch (error) {
+      console.error('Error sending push notification:', error);
+      throw error;
+    }
+  }
   async create(
     createAlertDto: CreateAlertDto,
     user: User

@@ -30,4 +30,7 @@ export class User {
 
   @Column({ default: 3 })
   token: number;
+
+  @Column({ type: 'text' })
+  fcd: string;
 }
