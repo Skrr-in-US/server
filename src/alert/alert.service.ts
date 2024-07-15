@@ -8,7 +8,7 @@ import { Repository, QueryRunner, DataSource } from 'typeorm';
 import { AlertResponseDto } from './dto/response/alert-response-dto';
 import { User } from 'src/user/entities/user.entity';
 import { join } from 'path';
-import * as admin from 'firebase-admin';
+const admin = require('firebase-admin');
 @Injectable()
 export class AlertService {
   constructor(
@@ -23,7 +23,7 @@ export class AlertService {
         __dirname,
         '..',
         '..',
-        'skrr-14f11-firebase-adminsdk-pf0su-cf2824e05b.json'
+        'skrr-us-firebase-adminsdk-v73y5-5e7afff769.json'
       )
     );
     admin.initializeApp({
@@ -31,15 +31,18 @@ export class AlertService {
     });
   }
 
-  async sendPushNotification() {
-    const registrationToken =
-      'fxrYVwjtkkUQoG6kVxJRLH:APA91bHJ4OciBnbLrAl7sVHd5XglLBLcAFZKqJ48BCvxBx36n0164-hNjdh7UQXOo4eqm2weSZrsw_RxjFE2XRFxs2h9z623AgNB_HanB-cfKcfaOsRvxaaiWrNmM7w9MXuQ06eBcs9A';
+  async sendPushNotification(id: number, gender: string) {
+    const receiveUserFCD = await this.userRepository.find({
+      select: { fcd: true },
+      where: { id },
+    });
+
     const payload = {
-      data: {
-        score: '850',
-        time: '2:45',
+      notification: {
+        title: 'skrr',
+        body: gender + 'chose you!',
       },
-      token: registrationToken,
+      token: receiveUserFCD[0].fcd,
     };
     try {
       const response = await admin.messaging().send(payload);
@@ -65,7 +68,7 @@ export class AlertService {
       const receiveUser = await queryRunner.manager
         .getRepository(User)
         .createQueryBuilder('user')
-        .select('user.name')
+        .select(['user.name', 'user.id'])
         .where('user.id = :id', { id: createAlertDto.receiveUser })
         .getOne();
 
@@ -80,6 +83,7 @@ export class AlertService {
         .save(createAlertDto);
 
       await queryRunner.commitTransaction();
+      this.sendPushNotification(receiveUser.id, user[0].gender);
       return savedAlert;
     } catch (err) {
       await queryRunner.rollbackTransaction();
