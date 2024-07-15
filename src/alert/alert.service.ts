@@ -23,7 +23,7 @@ export class AlertService {
         __dirname,
         '..',
         '..',
-        'skrr-us-firebase-adminsdk-v73y5-5e7afff769.json'
+        'skrr-us-firebase-adminsdk-v73y5-de1ec9505b.json'
       )
     );
     admin.initializeApp({
@@ -32,6 +32,10 @@ export class AlertService {
   }
 
   async sendPushNotification(id: number, gender: string) {
+    const capitalizeFirstLetter = (string) => {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+
     const receiveUserFCD = await this.userRepository.find({
       select: { fcd: true },
       where: { id },
@@ -40,7 +44,7 @@ export class AlertService {
     const payload = {
       notification: {
         title: 'skrr',
-        body: gender + 'chose you!',
+        body: capitalizeFirstLetter(gender) + ' chose you!',
       },
       token: receiveUserFCD[0].fcd,
     };

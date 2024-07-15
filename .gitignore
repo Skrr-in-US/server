@@ -133,7 +133,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-# skrr-us-firebase-adminsdk-v73y5-5e7afff769.json
+#skrr-us-firebase-adminsdk-v73y5-5e7afff769.json
 ### Node Patch ###
 # Serverless Webpack directories
 .webpack/
