@@ -23,7 +23,7 @@ export class AlertService {
         __dirname,
         '..',
         '..',
-        'skrr-us-firebase-adminsdk-v73y5-de1ec9505b.json'
+        'skrr-us-firebase-adminsdk-v73y5-89a8526ae2.json'
       )
     );
     admin.initializeApp({
@@ -53,9 +53,10 @@ export class AlertService {
       return response;
     } catch (error) {
       console.error('Error sending push notification:', error);
-      throw error;
+      return;
     }
   }
+
   async create(
     createAlertDto: CreateAlertDto,
     user: User
@@ -105,6 +106,7 @@ export class AlertService {
           gender: true,
         },
         where: { receiveUser: user[0].id },
+        order: { id: 'desc' },
       })
     );
   }
