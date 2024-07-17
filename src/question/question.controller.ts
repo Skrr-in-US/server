@@ -123,7 +123,6 @@ export class QuestionController {
   @UseGuards(JwtAuthGuard)
   @Get('shuffle')
   shuffle(@Req() request: any) {
-    console.log(request.user);
     return this.questionService.shuffle(request.user);
   }
 
