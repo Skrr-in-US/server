@@ -61,6 +61,7 @@ export class AlertService {
     createAlertDto: CreateAlertDto,
     user: User
   ): Promise<CreateAlertDto> {
+    console.log(createAlertDto);
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
