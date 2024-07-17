@@ -9,6 +9,8 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { FriendModule } from './friend/friend.module';
 import { AskModule } from './ask/ask.module';
+import { AwsModule } from './aws/aws.module';
+import { SchoolModule } from './school/school.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { AskModule } from './ask/ask.module';
     JwtModule,
     FriendModule,
     AskModule,
+    AwsModule,
+    SchoolModule,
   ],
   controllers: [],
   providers: [],
