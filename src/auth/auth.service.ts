@@ -69,4 +69,8 @@ export class AuthService {
 
     return UserInfoResponseDto.of(user);
   }
+
+  async updateToken(user: User, fcd: string) {
+    return await this.userRepository.update(user[0].id, { fcd });
+  }
 }

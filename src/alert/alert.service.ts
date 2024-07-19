@@ -31,8 +31,8 @@ export class AlertService {
     });
   }
 
-  async sendPushNotification(id: number, gender: string) {
-    const capitalizeFirstLetter = (string) => {
+  async sendPushNotification(id: number, question: string) {
+    const capitalizeFirstLetter = (string: string) => {
       return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
@@ -43,8 +43,8 @@ export class AlertService {
 
     const payload = {
       notification: {
-        title: 'skrr',
-        body: capitalizeFirstLetter(gender) + ' chose you!',
+        title: 'Someone voted for you',
+        body: capitalizeFirstLetter(question),
       },
       token: receiveUserFCD[0].fcd,
     };
@@ -61,7 +61,6 @@ export class AlertService {
     createAlertDto: CreateAlertDto,
     user: User
   ): Promise<CreateAlertDto> {
-    console.log(createAlertDto);
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -89,7 +88,7 @@ export class AlertService {
         .save(createAlertDto);
 
       await queryRunner.commitTransaction();
-      this.sendPushNotification(receiveUser.id, user[0].gender);
+      this.sendPushNotification(receiveUser.id, createAlertDto.question);
       return savedAlert;
     } catch (err) {
       await queryRunner.rollbackTransaction();

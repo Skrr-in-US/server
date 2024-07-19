@@ -6,6 +6,7 @@ import {
   Get,
   UseGuards,
   Req,
+  Put,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginAuthDto } from './dto/request/login-auth.dto';
@@ -36,5 +37,11 @@ export class AuthController {
   @Get('user')
   async validate(@Req() request: any) {
     return request.user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('fcd')
+  async updateToken(@Req() request: any, @Body() body: any) {
+    return this.authService.updateToken(request.user, body.fcd);
   }
 }
