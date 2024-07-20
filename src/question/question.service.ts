@@ -106,7 +106,7 @@ export class QuestionService {
 
     const users = await this.userService.findUser(userInfo[0]);
     if (users.length < 4) {
-      throw new BadRequestException(users.length);
+      return { isLock: true, people: users.length, school: userInfo[0].school };
     }
 
     const question = await this.questionRepository
@@ -118,7 +118,7 @@ export class QuestionService {
       .orderBy('RAND()')
       .getOne();
 
-    return { question, users };
+    return { isLock: false, question, users };
   }
 
   async shuffle(userInfo: User) {
