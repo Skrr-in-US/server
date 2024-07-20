@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateQuestionDto } from './dto/request/create-question.dto';
 import { UpdateQuestionDto } from './dto/request/update-question.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -100,6 +104,11 @@ export class QuestionService {
         .filter((id) => !isNaN(id));
     }
 
+    const users = await this.userService.findUser(userInfo[0]);
+    if (users.length < 4) {
+      throw new BadRequestException(users.length);
+    }
+
     const question = await this.questionRepository
       .createQueryBuilder('question')
       .where(
@@ -108,8 +117,6 @@ export class QuestionService {
       )
       .orderBy('RAND()')
       .getOne();
-
-    const users = await this.userService.findUser(userInfo[0]);
 
     return { question, users };
   }
