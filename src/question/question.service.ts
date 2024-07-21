@@ -106,7 +106,11 @@ export class QuestionService {
 
     const users = await this.userService.findUser(userInfo[0]);
     if (users.length < 4) {
-      return { isLock: true, people: users.length, school: userInfo[0].school };
+      return {
+        isLock: true,
+        people: users.length + 1,
+        school: userInfo[0].school,
+      };
     }
 
     const question = await this.questionRepository
