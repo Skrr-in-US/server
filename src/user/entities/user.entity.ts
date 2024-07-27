@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { genderType } from './enum/genderEnum';
 import { userType } from './enum/userEnum';
 
@@ -33,4 +38,7 @@ export class User {
 
   @Column({ type: 'text' })
   fcd: string;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 }
